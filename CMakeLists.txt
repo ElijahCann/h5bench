@@ -125,6 +125,12 @@ endif()
 
 set(h5bench_write_normal_dist_src h5bench_patterns/h5bench_write_normal_dist.c)
 
+# MY NEW TESTS
+#
+
+add_executable(h5bench_swift swift_io/test.c)
+
+
 add_executable(h5bench_write_var_normal_dist ${h5bench_write_normal_dist_src})
 target_link_libraries(h5bench_write_var_normal_dist h5bench_util hdf5 z m ${CMAKE_DL_LIBS} MPI::MPI_C) 
 
