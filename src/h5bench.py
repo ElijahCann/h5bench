@@ -34,6 +34,7 @@ class H5bench:
     H5BENCH_OPENPMD_READ = 'h5bench_openpmd_read'
     H5BENCH_E3SM = 'h5bench_e3sm'
     H5BENCH_MACSIO = 'h5bench_macsio'
+    H5BENCH_SWIFT = 'h5bench_swift'
 
     def __init__(self, setup, prefix=None, debug=None, abort=None, validate=None, filter=None):
         """Initialize the suite."""
@@ -245,6 +246,8 @@ class H5bench:
                 self.run_e3sm(id, benchmark)
             elif name == 'macsio':
                 self.run_macsio(id, benchmark)
+            elif name == 'swift':
+                self.run_swift(id, benchmark)
             else:
                 self.logger.critical('{} - Unsupported benchmark/kernel')
 
@@ -596,6 +599,88 @@ class H5bench:
 
             with open(stdout_file_name, mode='w') as stdout_file, open(stderr_file_name, mode='w') as stderr_file:
                 s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file, env=self.vol_environment)
+                sOutput, sError = s.communicate()
+
+                if s.returncode == 0 and not self.check_for_hdf5_error(stderr_file_name):
+                    self.logger.info('SUCCESS (all output files are located at %s/%s)', self.directory, id)
+                else:
+                    self.logger.error('Return: %s (check %s for detailed log)', s.returncode, stderr_file_name)
+
+                    if self.abort:
+                        self.logger.critical('h5bench execution aborted upon first error')
+
+                        sys.exit(os.EX_SOFTWARE)
+
+            end = time.time()
+
+            self.logger.info('Runtime: {:.7f} seconds (elapsed time, includes allocation wait time)'.format(end - start))
+        except Exception as e:
+            self.logger.error('Unable to run the benchmark: %s', e)
+
+            sys.exit(os.EX_SOFTWARE)
+
+
+    def run_swift(self, id, setup):
+        """Run the swift benchmark."""
+        if not self.is_available(self.H5BENCH_SWIFT):
+            self.logger.critical('{} is not available'.format(self.H5BENCH_SWIFT))
+
+            sys.exit(os.EX_UNAVAILABLE)
+
+        try:
+            start = time.time()
+
+            directory = '{}/{}/{}'.format(self.directory, id, setup['file'])
+            configuration = setup['configuration']
+
+            binary = self.H5BENCH_SWIFT
+
+            configuration_file = '{}/{}/swift.ini'.format(self.directory, id)
+
+            try:
+                # Create a temporary directory to store all configurations
+                os.makedirs(directory)
+            except OSError as exc:
+                if exc.errno != errno.EEXIST:
+                    raise
+
+                self.logger.warning('Base directory already exists: {}'.format(self.directory))
+
+                pass
+            except Exception as e:
+                self.logger.debug('Unable to create {}: {}'.format(self.directory, e))
+
+            # Create the configuration file for this benchmark
+            with open(configuration_file, 'w+') as f:
+                for key in configuration:
+                    f.write('{} = {}\n'.format(key, configuration[key]))
+
+                # f.write('directory = {}\n'.format(directory))
+
+            if self.prefix:
+                benchmark_path = self.prefix + '/' + self.binary
+            else:
+                if os.path.isfile(h5bench_configuration.__install__ + '/' + binary):
+                    benchmark_path = h5bench_configuration.__install__ + '/' + binary
+                else:
+                    benchmark_path = binary
+
+            command = '{} {} {}'.format(
+                self.mpi,
+                benchmark_path,
+                configuration_file
+            )
+
+            self.logger.info(command)
+
+            # Make sure the command line is in the correct format
+            arguments = shlex.split(command)
+
+            stdout_file_name = '{}/{}/stdout'.format(self.directory, id)
+            stderr_file_name = '{}/{}/stderr'.format(self.directory, id)
+
+            with open(stdout_file_name, mode='w') as stdout_file, open(stderr_file_name, mode='w') as stderr_file:
+                s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file) # TODO
                 sOutput, sError = s.communicate()
 
                 if s.returncode == 0 and not self.check_for_hdf5_error(stderr_file_name):
