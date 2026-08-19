@@ -1,0 +1,17 @@
+{
+    "mpi": {
+        "command": "mpirun",
+        "ranks": "1",
+        "configuration": ""
+    },
+    "vol": {},
+    "file-system": {},
+    "directory": "storage",
+    "benchmarks": [
+        {
+            "benchmark": "swift",
+            "file": "swift",
+            "configuration": {}
+        }
+    ]
+}
