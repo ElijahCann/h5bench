@@ -1,8 +1,7 @@
 {
     "mpi": {
         "command": "mpirun",
-        "ranks": "1",
-        "configuration": ""
+        "ranks": "1"
     },
     "vol": {},
     "file-system": {},
