@@ -680,7 +680,7 @@ class H5bench:
             stderr_file_name = '{}/{}/stderr'.format(self.directory, id)
 
             with open(stdout_file_name, mode='w') as stdout_file, open(stderr_file_name, mode='w') as stderr_file:
-                s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file) # TODO
+                s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file)
                 sOutput, sError = s.communicate()
 
                 if s.returncode == 0 and not self.check_for_hdf5_error(stderr_file_name):

@@ -10,7 +10,9 @@
         {
             "benchmark": "swift",
             "file": "swift",
-            "configuration": {}
+            "configuration": {
+              "numberOfParticles": 9999
+            }
         }
     ]
 }

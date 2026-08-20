@@ -120,16 +120,15 @@ if(WITH_ASYNC_VOL)
     target_link_libraries(h5bench_util asynchdf5 h5async)
 endif()
 
-# h5bench WRITE varying particle based on normal distribution ######################
-#
-
-set(h5bench_write_normal_dist_src h5bench_patterns/h5bench_write_normal_dist.c)
-
-# MY NEW TESTS
+# MY NEW TESTS TODO
 #
 
 add_executable(h5bench_swift swift_io/test.c)
 
+# h5bench WRITE varying particle based on normal distribution ######################
+#
+
+set(h5bench_write_normal_dist_src h5bench_patterns/h5bench_write_normal_dist.c)
 
 add_executable(h5bench_write_var_normal_dist ${h5bench_write_normal_dist_src})
 target_link_libraries(h5bench_write_var_normal_dist h5bench_util hdf5 z m ${CMAKE_DL_LIBS} MPI::MPI_C) 
