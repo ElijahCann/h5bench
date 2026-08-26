@@ -12,3 +12,7 @@
 [submodule "macsio"]
 	path = macsio
 	url = https://github.com/LLNL/MACSio
+[submodule "swift"]
+	path = swift
+	url = https://github.com/mladenivkovic/SWIFT.git
+	branch = hdf5IOtest
