@@ -29,6 +29,7 @@ option(H5BENCH_AMREX            "Enable AMReX benchmark"            OFF)
 option(H5BENCH_OPENPMD          "Enable OpenPMD benchmark"          OFF)
 option(H5BENCH_E3SM             "Enable E3SM benchmark"             OFF)
 option(H5BENCH_MACSIO           "Enable MACSio benchmark"           OFF)
+option(H5BENCH_SWIFT            "Enable SWIFT benchmark"            OFF)
 
 message(STATUS "h5bench baseline: ON")
 
@@ -41,6 +42,7 @@ if(H5BENCH_ALL)
     set(H5BENCH_OPENPMD ON)
     set(H5BENCH_E3SM ON)
     set(H5BENCH_MACSIO ON)
+    set(H5BENCH_SWIFT ON)
 endif()
 
 message(STATUS "h5bench METADATA: ${H5BENCH_METADATA}")
@@ -49,6 +51,7 @@ message(STATUS "h5bench AMREX: ${H5BENCH_AMREX}")
 message(STATUS "h5bench OPENPMD: ${H5BENCH_OPENPMD}")
 message(STATUS "h5bench E3SM: ${H5BENCH_E3SM}")
 message(STATUS "h5bench MACSIO: ${H5BENCH_MACSIO}")
+message(STATUS "h5bench SWIFT: ${H5BENCH_SWIFT}")
 
 # HDF5 Dependency #############################################################
 #
@@ -119,11 +122,6 @@ add_library(h5bench_util ${h5bench_util_src})
 if(WITH_ASYNC_VOL)
     target_link_libraries(h5bench_util asynchdf5 h5async)
 endif()
-
-# MY NEW TESTS TODO
-#
-
-add_executable(h5bench_swift swift_io/test.c)
 
 # h5bench WRITE varying particle based on normal distribution ######################
 #
@@ -202,6 +200,22 @@ if(H5BENCH_METADATA)
     add_executable(h5bench_hdf5_iotest ${meta_stress_src})
 
     target_link_libraries(h5bench_hdf5_iotest h5bench_util hdf5 z m ${CMAKE_DL_LIBS} MPI::MPI_C)
+endif()
+
+# SWIFT ######################################################################
+#
+# https://github.com/SWIFTSIM/SWIFT 
+if(H5BENCH_SWIFT)
+  ExternalProject_Add(h5bench_swift
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/swift
+    CONFIGURE_COMMAND autoreconf -i
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/swift/configure
+    BUILD_COMMAND make -C write-hdf5-output
+    INSTALL_COMMAND ${CMAKE_COMMAND} -E copy write-hdf5-output/write-hdf5-output ${CMAKE_BINARY_DIR}/h5bench_swift
+    BUILD_IN_SOURCE 1
+    LOG_CONFIGURE 1
+    LOG_BUILD 1
+  )
 endif()
 
 # AMReX #######################################################################
