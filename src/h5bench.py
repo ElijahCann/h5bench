@@ -247,7 +247,7 @@ class H5bench:
             elif name == 'macsio':
                 self.run_macsio(id, benchmark)
             elif name == 'swift':
-                self.run_swift(id, benchmark)
+                self.run_swift(id, benchmark[name], benchmark)
             else:
                 self.logger.critical('{} - Unsupported benchmark/kernel')
 
@@ -635,7 +635,7 @@ class H5bench:
 
             binary = self.H5BENCH_SWIFT
 
-            configuration_file = '{}/{}/swift.ini'.format(self.directory, id)
+            configuration_file = '{}/swift.ini'.format(directory)
 
             try:
                 # Create a temporary directory to store all configurations
@@ -650,6 +650,17 @@ class H5bench:
             except Exception as e:
                 self.logger.debug('Unable to create {}: {}'.format(self.directory, e))
 
+            # ensure HDF5WritingParameters.yml exists in the same directory as the binary
+            swift_params_src = os.path.join(
+                os.path.dirname(os.path.abspath(benchmark_path if False else self.H5BENCH_SWIFT)),
+                'HDF5WritingParameters.yml'
+            )
+            try:
+                shutil.copy(swift_params_src, os.path.join(directory, 'HDF5WritingParameters.yml'))
+            except Exception as e:
+                self.logger.error('Could not stage HDF5WritingParameters.yml: %s', e)
+                sys.exit(os.EX_SOFTWARE)
+
             # Create the configuration file for this benchmark
             with open(configuration_file, 'w+') as f:
                 for key in configuration:
@@ -658,7 +669,7 @@ class H5bench:
                 # f.write('directory = {}\n'.format(directory))
 
             if self.prefix:
-                benchmark_path = self.prefix + '/' + self.binary
+                benchmark_path = self.prefix + '/' + binary
             else:
                 if os.path.isfile(h5bench_configuration.__install__ + '/' + binary):
                     benchmark_path = h5bench_configuration.__install__ + '/' + binary
@@ -676,11 +687,11 @@ class H5bench:
             # Make sure the command line is in the correct format
             arguments = shlex.split(command)
 
-            stdout_file_name = '{}/{}/stdout'.format(self.directory, id)
-            stderr_file_name = '{}/{}/stderr'.format(self.directory, id)
+            stdout_file_name = '{}/stdout'.format(directory)
+            stderr_file_name = '{}/stderr'.format(directory)
 
             with open(stdout_file_name, mode='w') as stdout_file, open(stderr_file_name, mode='w') as stderr_file:
-                s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file)
+                s = subprocess.Popen(arguments, stdout=stdout_file, stderr=stderr_file, cwd=directory)
                 sOutput, sError = s.communicate()
 
                 if s.returncode == 0 and not self.check_for_hdf5_error(stderr_file_name):
