@@ -210,7 +210,8 @@ if(H5BENCH_SWIFT)
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/swift
     CONFIGURE_COMMAND autoreconf -i
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/swift/configure
-    BUILD_COMMAND make -C write-hdf5-output
+    BUILD_COMMAND make -C src version_string.h
+    COMMAND make -C write-hdf5-output
     INSTALL_COMMAND ${CMAKE_COMMAND} -E copy write-hdf5-output/write-hdf5-output ${CMAKE_BINARY_DIR}/h5bench_swift
     BUILD_IN_SOURCE 1
     LOG_CONFIGURE 1
