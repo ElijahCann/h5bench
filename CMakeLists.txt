@@ -209,7 +209,7 @@ if(H5BENCH_SWIFT)
   ExternalProject_Add(h5bench_swift
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/swift
     CONFIGURE_COMMAND autoreconf -i
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/swift/configure
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/swift/configure --with-hydro-dimension=3
     BUILD_COMMAND make -C src version_string.h
     COMMAND make -C write-hdf5-output
     INSTALL_COMMAND ${CMAKE_COMMAND} -E copy write-hdf5-output/write-hdf5-output ${CMAKE_BINARY_DIR}/h5bench_swift
