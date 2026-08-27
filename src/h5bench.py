@@ -247,7 +247,7 @@ class H5bench:
             elif name == 'macsio':
                 self.run_macsio(id, benchmark)
             elif name == 'swift':
-                self.run_swift(id, benchmark[name], benchmark)
+                self.run_swift(id, benchmark)
             else:
                 self.logger.critical('{} - Unsupported benchmark/kernel')
 
@@ -635,8 +635,6 @@ class H5bench:
 
             binary = self.H5BENCH_SWIFT
 
-            configuration_file = '{}/swift.ini'.format(directory)
-
             try:
                 # Create a temporary directory to store all configurations
                 os.makedirs(directory)
@@ -650,24 +648,7 @@ class H5bench:
             except Exception as e:
                 self.logger.debug('Unable to create {}: {}'.format(self.directory, e))
 
-            # ensure HDF5WritingParameters.yml exists in the same directory as the binary
-            swift_params_src = os.path.join(
-                os.path.dirname(os.path.abspath(benchmark_path if False else self.H5BENCH_SWIFT)),
-                'HDF5WritingParameters.yml'
-            )
-            try:
-                shutil.copy(swift_params_src, os.path.join(directory, 'HDF5WritingParameters.yml'))
-            except Exception as e:
-                self.logger.error('Could not stage HDF5WritingParameters.yml: %s', e)
-                sys.exit(os.EX_SOFTWARE)
-
-            # Create the configuration file for this benchmark
-            with open(configuration_file, 'w+') as f:
-                for key in configuration:
-                    f.write('{} = {}\n'.format(key, configuration[key]))
-
-                # f.write('directory = {}\n'.format(directory))
-
+            # Resolve the binary path first (needed below for the command line)
             if self.prefix:
                 benchmark_path = self.prefix + '/' + binary
             else:
@@ -676,10 +657,29 @@ class H5bench:
                 else:
                     benchmark_path = binary
 
-            command = '{} {} {}'.format(
+            # numberOfParticles: read from configuration, default to 9999
+            num_particles = configuration.get('numberOfParticles', 9999)
+
+            # parameter-file: must be an explicit path in the JSON, no inference
+            swift_params_src = configuration.get('parameter-file')
+            if not swift_params_src or not os.path.isfile(swift_params_src):
+                self.logger.error('configuration["parameter-file"] not found: %s', swift_params_src)
+                sys.exit(os.EX_SOFTWARE)
+
+            staged_params = os.path.join(directory, 'HDF5WritingParameters.yml')
+
+            try:
+                shutil.copy(swift_params_src, staged_params)
+            except Exception as e:
+                self.logger.error('Could not stage HDF5WritingParameters.yml: %s', e)
+                sys.exit(os.EX_SOFTWARE)
+
+            # Positional args: numberOfParticles, then the staged parameter file path
+            command = '{} {} {} {}'.format(
                 self.mpi,
                 benchmark_path,
-                configuration_file
+                num_particles,
+                os.path.basename(staged_params)
             )
 
             self.logger.info(command)
