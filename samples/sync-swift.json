@@ -11,7 +11,8 @@
             "benchmark": "swift",
             "file": "swift",
             "configuration": {
-              "numberOfParticles": 9999
+              "numberOfParticles": 999999,
+              "parameter-file": "../swift/write-hdf5-output/HDF5WritingParameters.yml"
             }
         }
     ]
