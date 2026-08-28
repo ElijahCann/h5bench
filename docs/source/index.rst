@@ -36,6 +36,7 @@ OpenPMD (write)      ``h5bench_openpmd_write``   |:white_check_mark:| |:white_la
 OpenPMD (read)       ``h5bench_openpmd_read``    |:white_check_mark:| |:white_large_square:|   |:white_large_square:|   |:white_large_square:| 
 E3SM-IO              ``h5bench_e3sm``            |:white_check_mark:| |:white_large_square:|   |:white_large_square:|   |:white_check_mark:| 
 MACSio               ``h5bench_macsio``          |:white_check_mark:| |:white_large_square:|   |:white_large_square:|   |:white_check_mark:| 
+SWIFT                ``h5bench_swift``           |:white_check_mark:| |:white_large_square:|   |:white_large_square:|   |:white_check_mark:|
 ==================== =========================== ==================== ======================== ======================== ========================
 
 .. toctree::
@@ -55,6 +56,7 @@ MACSio               ``h5bench_macsio``          |:white_check_mark:| |:white_la
    exerciser
    openpmd
    e3sm
+   swift
    macsio
 
 .. toctree::

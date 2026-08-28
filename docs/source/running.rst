@@ -113,7 +113,7 @@ Benchmarks
 ^^^^^^^^^^
 
 You can specify which benchmarks ``h5bench`` should run using this property, their order, and configuration.
-You can choose between: ``write``, ``write-unlimited``, ``overwrite``, ``append``, ``read``, ``metadata``, ``exerciser``, ``openpmd``, ``amrex``, ``e3sm``. 
+You can choose between: ``write``, ``write-unlimited``, ``overwrite``, ``append``, ``read``, ``metadata``, ``exerciser``, ``openpmd``, ``amrex``, ``e3sm``, ``swift``. 
 
 For each pattern of ``h5bench``, you should provide the ``file`` and the ``configuration``:
 
