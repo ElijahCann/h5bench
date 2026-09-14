@@ -15,4 +15,4 @@
 [submodule "swift"]
 	path = swift
 	url = https://github.com/mladenivkovic/SWIFT.git
-	branch = hdf5IOtest
+	branch = main_summer_2026
