@@ -17,6 +17,7 @@ This benchmark requires:
 - **HDF5** (parallel build) — e.g. version 1.14.4
 - **MPI** — an MPI compiler wrapper (e.g. ``mpicc``)
 - **GSL** — required by SWIFT's ``write_output_single()``
+- **Autotools** (``autoreconf``, ``automake``, ``autoconf``) — required to configure SWIFT's build
 - An Intel or GNU compiler toolchain compatible with the above
 
 Configuration
@@ -59,9 +60,3 @@ To run an instance of the SWIFT benchmark you need to include the following in t
             "parameter-file": "../swift/write-hdf5-output/HDF5WritingParameters.yml"
         }
     }
-
-Notes
------
-Note that the ``/Cells`` group in the output is currently empty, as the benchmark
-drives SWIFT's I/O path directly without the mesh-building step
-(``space_regrid``/``space_split``) that populates it in a full SWIFT run.
